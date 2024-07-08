@@ -1,4 +1,4 @@
-package subway.line.model;
+package subway.line.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;

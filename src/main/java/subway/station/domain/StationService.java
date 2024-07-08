@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import subway.station.domain.model.StationRequest;
 import subway.station.domain.model.StationResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +36,17 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<StationResponse> stations(long down, long up) {
+        List<StationResponse> res = new ArrayList<>();
+        for (long stationId = down; stationId <= up; stationId++) {
+            res.add(createStationResponse(stationRepository.findById(stationId)));
+        }
+
+        return res;
+    }
+
     private StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
+        return new StationResponse(station.getId(), station.getName());
     }
 }
