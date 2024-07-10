@@ -37,7 +37,7 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public List<StationResponse> stations(long down, long up) {
+    public List<StationResponse> searchStationsInLine(long down, long up) {
         List<StationResponse> res = new ArrayList<>();
         for (long stationId = down; stationId <= up; stationId++) {
             res.add(createStationResponse(stationRepository.findById(stationId)));
