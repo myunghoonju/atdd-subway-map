@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import subway.station.domain.model.StationResponse;
 
 import java.util.Arrays;
@@ -35,6 +36,7 @@ public class StationAcceptanceTest {
 
     @Test
     @DisplayName("지하철역을 생성한다.")
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void createStation() {
         //When 지하철역을 생성하면
         Map<String, String> params = new HashMap<>();
@@ -62,6 +64,7 @@ public class StationAcceptanceTest {
 
     @Test
     @DisplayName("지하철역 목록 조회 인수 테스트")
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void search_stations() {
         //Given 2개의 지하철역을 생성하고
         save("Jang-Am");
@@ -76,6 +79,7 @@ public class StationAcceptanceTest {
 
     @Test
     @DisplayName("지하철역 제거 인수 테스트 메서드 생성")
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void delete_station() {
         //Given 지하철역을 생성하고
         save("Madeul");

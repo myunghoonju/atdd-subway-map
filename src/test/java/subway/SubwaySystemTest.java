@@ -32,6 +32,7 @@ public class SubwaySystemTest {
 
     //지하철 노선을 생성한다
     @Test
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = {"classpath:data/insert-station.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void line_creation_test() {
         //when
@@ -44,6 +45,7 @@ public class SubwaySystemTest {
 
     //지하철 노선 목록을 조회한다
     @Test
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void search_lines_test() {
         //given
         save("1호선", "bg-red-600", 1, 2, 10);
@@ -59,6 +61,7 @@ public class SubwaySystemTest {
 
     //특정 지하철 노선을 조회한다
     @Test
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void search_line_test() {
         //given
         LineResponse line = save("1호선", "bg-red-600", 1, 2, 10);
@@ -72,6 +75,7 @@ public class SubwaySystemTest {
 
     //지하철 노선을 수정한다
     @Test
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void edit_line_test() {
         //given
         LineResponse line = save("1호선", "bg-red-600", 1, 2, 10);
@@ -87,6 +91,7 @@ public class SubwaySystemTest {
 
     //특정 지하철 노선을 삭제한다
     @Test
+    @Sql(value = {"classpath:data/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void delete_line_test() {
         //given
         LineResponse line = save("1호선", "bg-red-600", 1, 2, 10);
