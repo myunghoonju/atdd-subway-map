@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import subway.line.domain.Line;
 import subway.station.domain.model.StationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,12 +23,28 @@ public class LineResponse {
 
     private String color;
 
+    private long upStationId;
+
+    private long downStationId;
+
     private List<LineStation> stations = new ArrayList<>();
 
     public static LineResponse of(Line line, List<StationResponse> stations) {
         return new LineResponse(line.getId(),
                                 line.getName(),
                                 line.getColor(),
+                                line.getUpStationId(),
+                                line.getDownStationId(),
+                                LineStation.of(stations));
+    }
+
+    public static LineResponse of(LineResponse line,
+                                  List<StationResponse> stations) {
+        return new LineResponse(line.getId(),
+                                line.getName(),
+                                line.getColor(),
+                                line.getUpStationId(),
+                                line.getDownStationId(),
                                 LineStation.of(stations));
     }
 }

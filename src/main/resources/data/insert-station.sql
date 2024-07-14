@@ -1,3 +1,2 @@
--- create stations
+INSERT INTO subway.line (name, color, upstationid, downstationid, distance) VALUES ('7호선', 'bg-red-600', 1, 1, 10);
 insert into station(name) values ('Jang-Am'), ('Nowon'), ('Achasan'),('Aeogae'),('Ahyeon'),('AirportMarket'),('Amsa'),('Anam'),('Anguk'),('Ansan'),('Anyang'),('Apgujeong'),('Apgujeongrodeo');
-

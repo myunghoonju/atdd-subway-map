@@ -2,6 +2,8 @@ package subway.station.domain;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import subway.common.constant.ErrorType;
+import subway.common.exception.SubWayException;
 import subway.station.domain.model.StationRequest;
 import subway.station.domain.model.StationResponse;
 
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class StationService {
 
     private final StationRepository stationRepository;
@@ -24,7 +27,6 @@ public class StationService {
         return createStationResponse(station);
     }
 
-    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
                 .map(this::createStationResponse)
@@ -36,10 +38,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public List<StationResponse> searchStationsInLine(long down, long up) {
+    public List<StationResponse> searchStationsInLine(long up, long down) {
         List<StationResponse> res = new ArrayList<>();
-        for (long stationId = down; stationId <= up; stationId++) {
+        for (long stationId = up; stationId <= down; stationId++) {
             res.add(createStationResponse(stationRepository.findById(stationId)));
         }
 
@@ -47,6 +48,10 @@ public class StationService {
     }
 
     private StationResponse createStationResponse(Station station) {
+        if (station == null) {
+            throw new SubWayException(ErrorType.NO_SUCH_STATION);
+        }
+
         return new StationResponse(station.getId(), station.getName());
     }
 }

@@ -2,11 +2,21 @@ package subway.line.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import subway.line.domain.LineService;
 import subway.line.domain.model.LineRequest;
 import subway.line.domain.model.LineResponse;
 import subway.line.domain.model.LineUpdateRequest;
+import subway.section.SectionService;
+import subway.section.model.SectionRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -17,6 +27,7 @@ import java.util.List;
 public class LineController {
 
     private final LineService service;
+    private final SectionService sectionService;
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> lines() {
@@ -44,5 +55,21 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable long id) {
         service.removeLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable long id,
+                                                   @RequestBody SectionRequest sectionReq) {
+        LineResponse line = service.searchLine(id);
+        LineResponse res = LineResponse.of(line, sectionService.addSection(line, sectionReq));
+
+        return ResponseEntity.created(URI.create("/lines" + id + "/sections")).body(res);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> deleteSection(@PathVariable long id, @RequestParam long stationId) {
+        sectionService.removeSection(id, stationId);
+        sectionService.rollbackLine(id);
+        return ResponseEntity.ok().build();
     }
 }
