@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.common.constant.ErrorType;
 import subway.common.exception.SubWayException;
+import subway.section.Section;
 import subway.station.domain.model.StationRequest;
 import subway.station.domain.model.StationResponse;
 
@@ -43,6 +44,17 @@ public class StationService {
         for (long stationId = up; stationId <= down; stationId++) {
             res.add(createStationResponse(stationRepository.findById(stationId)));
         }
+
+        return res;
+    }
+
+    public List<StationResponse> searchStationsInLine(List<Section> sections) {
+        List<StationResponse> res = new ArrayList<>();
+        sections.forEach(section -> {
+            for (long stationId = section.getBegin(); stationId <= section.getEnd(); stationId++) {
+                res.add(createStationResponse(stationRepository.findById(stationId)));
+            }
+        });
 
         return res;
     }

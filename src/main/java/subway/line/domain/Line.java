@@ -5,12 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import subway.common.exception.SubWayException;
+import subway.section.Section;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 import static subway.common.constant.ErrorType.UNABLE_TO_EXPAND;
 
@@ -20,7 +24,6 @@ import static subway.common.constant.ErrorType.UNABLE_TO_EXPAND;
 public class Line {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private long id;
 
     @Column(name = "name")
@@ -29,25 +32,16 @@ public class Line {
     @Column(name = "color")
     private String color;
 
-    @Column(name = "upstationid")
-    private long upStationId;
-
-    @Column(name = "downstationid")
-    private long downStationId;
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<>();
 
     @Column(name = "distance")
     private int distance;
 
     @Builder
-    public Line(String name,
-                String color,
-                long upStationId,
-                long downStationId,
-                int distance) {
+    public Line(String name, String color, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
         this.distance = distance;
     }
 
@@ -56,11 +50,11 @@ public class Line {
         this.color = color;
     }
 
+    //fixme
     public void rollback(long upStationId,
                          long downStationId,
                          int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+
         this.distance = distance;
     }
 
@@ -68,7 +62,7 @@ public class Line {
                                long downStationId,
                                int distance) {
         validSection(upStationId, downStationId);
-        this.downStationId = downStationId;
+
         this.distance = distance;
     }
 
@@ -78,8 +72,8 @@ public class Line {
         }
     }
 
+    //fixme
     private boolean expandable(long upStationId, long downStationId) {
-        return this.downStationId == upStationId &&
-               this.downStationId < downStationId;
+        return true;
     }
 }

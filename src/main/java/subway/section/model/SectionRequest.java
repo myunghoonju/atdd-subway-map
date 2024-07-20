@@ -3,6 +3,8 @@ package subway.section.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import subway.line.domain.Line;
+import subway.line.domain.model.LineRequest;
 import subway.section.Section;
 
 @Getter @Setter
@@ -23,13 +25,23 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public static Section of(long lineId, SectionRequest request) {
+    public static Section of(Line line, LineRequest req) {
         return Section.builder()
-                      .begin(request.upStationId)
-                      .end(request.downStationId)
-                      .distance(request.distance)
-                      .lineId(lineId)
+                      .begin(req.getUpStationId())
+                      .end(req.getDownStationId())
+                      .distance(req.getDistance())
                       .active(true)
+                      .line(line)
+                      .build();
+    }
+
+    public static Section of(Line line, SectionRequest request) {
+        return Section.builder()
+                      .begin(request.getUpStationId())
+                      .end(request.getDownStationId())
+                      .distance(request.getDistance())
+                      .active(true)
+                      .line(line)
                       .build();
     }
 }

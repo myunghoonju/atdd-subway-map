@@ -1,9 +1,11 @@
 package subway.station.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
+@NoArgsConstructor
 public class StationRequest {
 
     private String name;

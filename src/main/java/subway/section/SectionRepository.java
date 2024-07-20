@@ -2,9 +2,9 @@ package subway.section;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface SectionRepository extends JpaRepository<Section, Long> {
 
-    Section findByEndAndLineId(long end, long lineId);
-
-    Section findTopByLineIdAndActiveOrderByEndDesc(long lineId, boolean active);
+    List<Section> findByLineId(long lineId);
 }

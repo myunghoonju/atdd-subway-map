@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import subway.line.domain.Line;
 import subway.line.domain.LineService;
 import subway.line.domain.model.LineRequest;
 import subway.line.domain.model.LineResponse;
@@ -36,7 +37,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> line(@PathVariable long id) {
-        return ResponseEntity.ok().body(service.searchLine(id));
+        return ResponseEntity.ok().body(service.line(id));
     }
 
     @PostMapping
@@ -53,6 +54,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable long id) {
+        sectionService.deactivateSection(id);
         service.removeLine(id);
         return ResponseEntity.noContent().build();
     }
@@ -60,16 +62,16 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable long id,
                                                    @RequestBody SectionRequest sectionReq) {
-        LineResponse line = service.searchLine(id);
-        LineResponse res = LineResponse.of(line, sectionService.addSection(line, sectionReq));
+        Line line = service.searchLine(id);
+        LineResponse res = LineResponse.of(line, sectionService.addSectionToLine(line, sectionReq));
 
         return ResponseEntity.created(URI.create("/lines" + id + "/sections")).body(res);
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable long id, @RequestParam long stationId) {
+    public ResponseEntity<Void> deleteSection(@PathVariable long id,
+                                              @RequestParam long stationId) {
         sectionService.removeSection(id, stationId);
-        sectionService.rollbackLine(id);
         return ResponseEntity.ok().build();
     }
 }

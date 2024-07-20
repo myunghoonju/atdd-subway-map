@@ -1,3 +1,3 @@
-truncate subway.line;
-truncate subway.station;
-truncate subway.section;
+truncate line;
+truncate section;
+truncate station;

@@ -23,28 +23,19 @@ public class LineResponse {
 
     private String color;
 
-    private long upStationId;
-
-    private long downStationId;
-
     private List<LineStation> stations = new ArrayList<>();
 
     public static LineResponse of(Line line, List<StationResponse> stations) {
         return new LineResponse(line.getId(),
                                 line.getName(),
                                 line.getColor(),
-                                line.getUpStationId(),
-                                line.getDownStationId(),
                                 LineStation.of(stations));
     }
 
-    public static LineResponse of(LineResponse line,
-                                  List<StationResponse> stations) {
+    public static LineResponse of(LineResponse line, List<StationResponse> stations) {
         return new LineResponse(line.getId(),
                                 line.getName(),
                                 line.getColor(),
-                                line.getUpStationId(),
-                                line.getDownStationId(),
                                 LineStation.of(stations));
     }
 }

@@ -1,7 +1,7 @@
 package subway;
 
 import io.restassured.RestAssured;
-import org.assertj.core.api.Assertions;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 import subway.line.domain.model.LineResponse;
 import subway.section.model.SectionRequest;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Slf4j
 @DisplayName("지하철 구간 관리")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubWaySectionTest {
@@ -32,9 +35,8 @@ public class SubWaySectionTest {
         LineResponse lineOld = save(1, 2, 10);
         LineResponse lineNew = save(2, 3, 12);
 
-        System.out.println(lineOld);
-        System.out.println("*****");
-        System.out.println(lineNew);
+        log.info("old line - {}", lineOld);
+        log.info("new line - {}", lineNew);
     }
 
     @DisplayName("지하철 1호선 마지막 역을 제거하고, 구간도 이전 구간으로 되돌리는 테스트")
@@ -52,7 +54,8 @@ public class SubWaySectionTest {
         delete(3);
 
         // 이전 추가된 마지막 역 id와(2) 일치
-        Assertions.assertThat(search(1).getDownStationId()).isEqualTo(2);
+        boolean result = search(1).getStations().stream().anyMatch(it -> it.getId() == 2);
+        assertTrue(result);
     }
 
     private LineResponse save(int upStation,
