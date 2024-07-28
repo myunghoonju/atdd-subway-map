@@ -6,6 +6,7 @@ import lombok.Setter;
 import subway.line.domain.Line;
 import subway.line.domain.model.LineRequest;
 import subway.section.Section;
+import subway.station.domain.Station;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -25,21 +26,27 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public static Section of(Line line, LineRequest req) {
+    public static Section of(Line line,
+                             LineRequest req,
+                             Station begin,
+                             Station end) {
         return Section.builder()
-                      .begin(req.getUpStationId())
-                      .end(req.getDownStationId())
+                      .upStation(begin)
+                      .downStation(end)
                       .distance(req.getDistance())
                       .active(true)
                       .line(line)
                       .build();
     }
 
-    public static Section of(Line line, SectionRequest request) {
+    public static Section of(Line line,
+                             SectionRequest req,
+                             Station begin,
+                             Station end) {
         return Section.builder()
-                      .begin(request.getUpStationId())
-                      .end(request.getDownStationId())
-                      .distance(request.getDistance())
+                      .upStation(begin)
+                      .downStation(end)
+                      .distance(req.getDistance())
                       .active(true)
                       .line(line)
                       .build();

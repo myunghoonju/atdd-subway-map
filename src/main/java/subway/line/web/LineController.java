@@ -29,15 +29,16 @@ public class LineController {
 
     private final LineService service;
     private final SectionService sectionService;
+    private final LineService lineService;
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> lines() {
-        return ResponseEntity.ok().body(service.lines());
+        return ResponseEntity.ok().body(service.findAllLines());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> line(@PathVariable long id) {
-        return ResponseEntity.ok().body(service.line(id));
+        return ResponseEntity.ok().body(service.findLineAndStations(id));
     }
 
     @PostMapping
@@ -46,8 +47,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable long id,
-                                           @RequestBody LineUpdateRequest lineReq) {
+    public ResponseEntity<Void> updateLine(@PathVariable long id, @RequestBody LineUpdateRequest lineReq) {
         service.editLine(id, lineReq);
         return ResponseEntity.ok().build();
     }
@@ -60,18 +60,20 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<LineResponse> addSection(@PathVariable long id,
-                                                   @RequestBody SectionRequest sectionReq) {
-        Line line = service.searchLine(id);
+    public ResponseEntity<LineResponse> addSection(@PathVariable long id, @RequestBody SectionRequest sectionReq) {
+        Line line = service.findLine(id);
         LineResponse res = LineResponse.of(line, sectionService.addSectionToLine(line, sectionReq));
 
         return ResponseEntity.created(URI.create("/lines" + id + "/sections")).body(res);
     }
 
     @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable long id,
-                                              @RequestParam long stationId) {
+    public ResponseEntity<Void> deleteSection(@PathVariable long id, @RequestParam long stationId) {
         sectionService.removeSection(id, stationId);
+
+        Line line = lineService.findLine(id);
+        line.refresh();
+
         return ResponseEntity.ok().build();
     }
 }

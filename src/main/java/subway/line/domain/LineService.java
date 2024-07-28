@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LineService {
 
-    private final LineRepository repository;
+    private final LineRepository lineRepository;
     private final StationService stationService;
     private final SectionService sectionService;
 
     @Transactional(readOnly = true)
-    public List<LineResponse> lines() {
-        return repository.findAll()
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll()
                          .stream()
                          .map(it -> {
                                        List<StationResponse> stations = stationService.searchStationsInLine(it.getSections());
@@ -34,11 +34,9 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse line(long id) {
-        Line line = repository.findLineById(id);
-        if (line == null) {
-            throw new SubWayException(ErrorType.NO_SUCH_LINE);
-        }
+    public LineResponse findLineAndStations(long id) {
+        Line line = lineRepository.findById(id)
+                                  .orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
 
         List<StationResponse> stations = stationService.searchStationsInLine(line.getSections());
 
@@ -46,29 +44,25 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public Line searchLine(long id) {
-        Line line = repository.findLineById(id);
-        if (line == null) {
-            throw new SubWayException(ErrorType.NO_SUCH_LINE);
-        }
-
-        return line;
+    public Line findLine(long id) {
+        return lineRepository.findById(id)
+                             .orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
     }
 
     @Transactional
     public LineResponse addLine(LineRequest lineReq) {
-        Line saved = repository.save(LineRequest.toEntity(lineReq));
+        Line saved = lineRepository.save(LineRequest.toEntity(lineReq));
         return LineResponse.of(saved, sectionService.addSection(saved, lineReq));
     }
 
     @Transactional
     public void editLine(long id, LineUpdateRequest lineReq) {
-        Line line = repository.findLineById(id);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
         line.update(lineReq.getName(), lineReq.getColor());
     }
 
     @Transactional
     public void removeLine(long id) {
-        repository.deleteById(id);
+        lineRepository.deleteById(id);
     }
 }
