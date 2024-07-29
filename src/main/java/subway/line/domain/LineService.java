@@ -3,9 +3,12 @@ package subway.line.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import subway.common.constant.ErrorType;
+import subway.common.exception.SubWayException;
 import subway.line.domain.model.LineRequest;
 import subway.line.domain.model.LineResponse;
 import subway.line.domain.model.LineUpdateRequest;
+import subway.section.SectionService;
 import subway.station.domain.StationService;
 import subway.station.domain.model.StationResponse;
 
@@ -16,48 +19,50 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LineService {
 
-    private final LineRepository repository;
+    private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionService sectionService;
 
     @Transactional(readOnly = true)
-    public List<LineResponse> lines() {
-        return repository.findAll()
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll()
                          .stream()
                          .map(it -> {
-                                       List<StationResponse> stations = stationService.searchStationsInLine(it.getDownStationId(),
-                                                                                                            it.getUpStationId());
+                                       List<StationResponse> stations = stationService.searchStationsInLine(it.getSections());
                                        return LineResponse.of(it, stations);
                          }).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public LineResponse searchLine(long id) {
-        Line line = repository.findLineById(id);
-        if (line == null) {
-            return null;
-        }
+    public LineResponse findLineAndStations(long id) {
+        Line line = lineRepository.findById(id)
+                                  .orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
 
-        List<StationResponse> stations = stationService.searchStationsInLine(line.getDownStationId(), line.getUpStationId());
+        List<StationResponse> stations = stationService.searchStationsInLine(line.getSections());
 
         return LineResponse.of(line, stations);
     }
 
+    @Transactional(readOnly = true)
+    public Line findLine(long id) {
+        return lineRepository.findById(id)
+                             .orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
+    }
+
     @Transactional
     public LineResponse addLine(LineRequest lineReq) {
-        Line saved = repository.save(LineRequest.toEntity(lineReq));
-        List<StationResponse> stations = stationService.searchStationsInLine(lineReq.getDownStationId(), lineReq.getUpStationId());
-
-        return LineResponse.of(saved, stations);
+        Line saved = lineRepository.save(LineRequest.toEntity(lineReq));
+        return LineResponse.of(saved, sectionService.addSection(saved, lineReq));
     }
 
     @Transactional
     public void editLine(long id, LineUpdateRequest lineReq) {
-        Line line = repository.findLineById(id);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new SubWayException(ErrorType.NO_SUCH_LINE));
         line.update(lineReq.getName(), lineReq.getColor());
     }
 
     @Transactional
     public void removeLine(long id) {
-        repository.deleteById(id);
+        lineRepository.deleteById(id);
     }
 }

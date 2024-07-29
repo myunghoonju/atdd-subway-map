@@ -11,9 +11,9 @@ public class LineRequest {
 
     private String color;
 
-    private int upStationId;
+    private long upStationId;
 
-    private int downStationId;
+    private long downStationId;
 
     private int distance;
 
@@ -21,8 +21,6 @@ public class LineRequest {
         return Line.builder()
                    .name(lineRequest.getName())
                    .color(lineRequest.getColor())
-                   .upStationId(lineRequest.getUpStationId())
-                   .downStationId(lineRequest.getDownStationId())
                    .distance(lineRequest.getDistance())
                    .build();
     }
